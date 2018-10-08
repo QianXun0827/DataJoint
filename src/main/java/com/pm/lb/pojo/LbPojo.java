@@ -1,4 +1,4 @@
-package com.pm.data.pojo;
+package com.pm.lb.pojo;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

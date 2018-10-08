@@ -1,4 +1,4 @@
-package com.pm.data;
+package com.pm;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * @author huhaiqiang
  */
-@SpringBootApplication(scanBasePackages= "com.pm.data")
-@MapperScan("com.pm.data.mapper")
+@SpringBootApplication(scanBasePackages= "com.pm.lb")
+@MapperScan("com.pm.lb.mapper")
 @EnableTransactionManagement
 @EnableCaching
 public class DataJointApplication {

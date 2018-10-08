@@ -1,12 +1,12 @@
-package com.pm.data.service.impl;
+package com.pm.lb.service.impl;
 
-import com.pm.data.mapper.LbMapper;
-import com.pm.data.pojo.ShLine;
-import com.pm.data.pojo.ShLineStation;
-import com.pm.data.pojo.ShStation;
-import com.pm.data.vo.LBPojoList;
-import com.pm.data.pojo.LbPojo;
-import com.pm.data.service.LbService;
+import com.pm.lb.mapper.LbMapper;
+import com.pm.lb.pojo.ShLine;
+import com.pm.lb.pojo.ShLineStation;
+import com.pm.lb.pojo.ShStation;
+import com.pm.lb.vo.LBPojoList;
+import com.pm.lb.pojo.LbPojo;
+import com.pm.lb.service.LbService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

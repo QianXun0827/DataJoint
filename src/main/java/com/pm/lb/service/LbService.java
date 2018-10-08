@@ -1,6 +1,6 @@
-package com.pm.data.service;
+package com.pm.lb.service;
 
-import com.pm.data.vo.LBPojoList;
+import com.pm.lb.vo.LBPojoList;
 
 /**
  * @author huhaiqiang

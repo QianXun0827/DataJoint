@@ -1,9 +1,9 @@
-package com.pm.data.mapper;
+package com.pm.lb.mapper;
 
 
-import com.pm.data.pojo.ShLine;
-import com.pm.data.pojo.ShLineStation;
-import com.pm.data.pojo.ShStation;
+import com.pm.lb.pojo.ShLine;
+import com.pm.lb.pojo.ShLineStation;
+import com.pm.lb.pojo.ShStation;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;

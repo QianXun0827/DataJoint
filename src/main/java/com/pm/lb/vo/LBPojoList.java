@@ -1,6 +1,6 @@
-package com.pm.data.vo;
+package com.pm.lb.vo;
 
-import com.pm.data.pojo.LbPojo;
+import com.pm.lb.pojo.LbPojo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

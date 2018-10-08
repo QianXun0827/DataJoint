@@ -1,7 +1,7 @@
-package com.pm.data.controller;
+package com.pm.lb.controller;
 
-import com.pm.data.vo.LBPojoList;
-import com.pm.data.service.LbService;
+import com.pm.lb.vo.LBPojoList;
+import com.pm.lb.service.LbService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +20,7 @@ public class LbController {
 
     @RequestMapping("/test")
     public String testHtml() {
-        return "/LbData.html";
+        return "/lb/LbData.html";
     }
 
     @RequestMapping(value = "/insert" ,consumes = "application/json;charset=utf-8")
