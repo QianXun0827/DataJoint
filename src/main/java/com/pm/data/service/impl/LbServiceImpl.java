@@ -88,4 +88,11 @@ public class LbServiceImpl implements LbService {
         return rows;
     }
 
+    @Override
+    public int updateData() {
+
+
+        return 0;
+    }
+
 }

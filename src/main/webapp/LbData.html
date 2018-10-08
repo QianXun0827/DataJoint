@@ -10,7 +10,7 @@
 <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 		
-         function WebSocketTest()
+         function WebSocketTest1()
          {
              $.ajax({
                  url: "LingBoData.json",
@@ -30,13 +30,26 @@
                  }
              });
          }
+
+         function WebSocketTest2()
+         {
+             $.ajax({
+                 url: "/update",
+                 success: function (result) {
+                     if (result.data.status === 200) {
+                         alert("修改成功!");
+					 }
+                 }
+             });
+         }
       </script>
 </head>
 <body>
 
 	<div class="col-md-4 offset-3" id="sse">
 		<h3>自测页面</h3>
-		<button type="button" class="btn btn-primary" onclick="javascript:WebSocketTest()">测试数据提交</button>
+		<button type="button" class="btn btn-primary" onclick="javascript:WebSocketTest1()">测试数据提交</button>
+		<button type="button" class="btn btn-primary" onclick="javascript:WebSocketTest2()">数据更新</button>
 		<span class=" offset-2" id="video"></span>
     </div>
 </body>

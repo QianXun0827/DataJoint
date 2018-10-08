@@ -9,5 +9,7 @@ public interface LbService {
 
 	int insertData(LBPojoList lingBoPojo);
 
+    int updateData();
+
 //    int insertLocalData();
 }

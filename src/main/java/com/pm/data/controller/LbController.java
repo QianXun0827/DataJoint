@@ -28,4 +28,10 @@ public class LbController {
     public void insertData(@RequestBody LBPojoList bojoList) {
         lbService.insertData(bojoList);
     }
+
+    @RequestMapping("/update")
+    @ResponseBody
+    public void updateData() {
+        lbService.updateData();
+    }
 }
