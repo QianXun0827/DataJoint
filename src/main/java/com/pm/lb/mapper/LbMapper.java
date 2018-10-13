@@ -1,6 +1,7 @@
 package com.pm.lb.mapper;
 
 
+import com.pm.lb.pojo.LbPojo;
 import com.pm.lb.pojo.ShLine;
 import com.pm.lb.pojo.ShLineStation;
 import com.pm.lb.pojo.ShStation;

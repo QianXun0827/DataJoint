@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>测试页面</title>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/hk/common/HkData.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+
+        function WebSocketTest1() {
+            $.ajax({
+                url: "/hk/getToken",
+                success: function (result) {
+                    $("#tokenId").val(JSON.parse(result.data).access_token);
+                }
+            });
+        }
+
+        function WebSocketTest2() {
+            var token = $("#tokenId").val();
+            var url = $("#hkUrl").val();
+            var param = {
+                "token": token,
+                "url": url
+            }
+            $.ajax({
+                url: "/hk/getDevicesOnline",
+                data: param,
+                success: function (result) {
+                    $("#textId").val(result.data);
+                    console.log(result);
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+
+<div class="col-md-4 offset-3" id="sse">
+    <h3>自测页面</h3>
+    <button type="button" class="btn btn-primary" onclick="javascript:WebSocketTest1()">获取token</button>
+    &nbsp;<span><input id="tokenId" value=""></span>
+    <br><br><br>
+    <span>接口url：&nbsp;&nbsp;<input id="hkUrl" value="https://47.97.94.244:443"></span>
+    <br><br>
+    <button type="button" class="btn btn-primary" onclick="javascript:WebSocketTest2()">接口测试</button>
+    <textarea id="textId" rows="10" cols="50"></textarea>
+</div>
+</body>
+
+</html>

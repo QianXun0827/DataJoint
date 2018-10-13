@@ -49,5 +49,8 @@ netty:
 websocket:
   port: 10013
 
+server:
+  port: 8081
+
 
 

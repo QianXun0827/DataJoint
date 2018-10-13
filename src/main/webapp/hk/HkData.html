@@ -1,0 +1,386 @@
+<html>
+<head>
+	<title>客户端1.0使用示例</title>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <style>
+		input{
+			width:100px;
+			height:50px;
+		}
+        input[type="text"]{
+            width:200px;
+            height:30px;
+        }
+        form{
+            position:absolute;
+            top:100px;
+            left:35%;
+        }
+		input[type="button"]:hover{
+			cursor: pointer;
+		}
+		.operate-btn{
+			position:absolute;
+			top:450px;
+			left:35%;
+		}
+        img{
+
+        }
+        .demoIcon{
+            position:absolute;
+            top:95px;
+            left:120%;
+            width:270px;
+            height:237px;
+            background: url("/hk/images/demoIndex.png");
+          }
+    </style>
+</head>
+<body>
+    <form>
+        <div>
+            <p>请输入企业标识</p>
+            <input id="scheme" type="text" value="pmjs"/>
+        </div>
+        <div>
+            <p>请输入监控点indexCode</p>
+            <input id="indexCode" type="text" value="C52875669_2"/>
+            <div class="demoIcon"></div>
+        </div>
+        <div>
+            <p>请输入开放授权key</p>
+            <input id="key" type="text" value="IrwyWsFWcL8yAV7j"/>
+        </div>
+        <div>
+            <p>请输入开放授权security</p>
+            <input id="security" type="text" value="frbUZMfp6wrzR3nyDt2AZ9rSUAGdZU"/>
+        </div>
+    </form>
+	<div class="operate-btn">
+		<input id="download" type="button" value="下载客户端"/>
+		<input id="update" type="button" value="更新客户端"/>
+		<input id="open" type="button" value="打开下载中心"/>
+		<input id="preview" type="button" value="视频预览"/>
+		<input id="playback" type="button" value="视频回放"/>
+	</div>
+</body>
+<script src="/hk/jquery-1.11.3.js"></script>
+<script>
+	/****
+	下面URL中要从https://www.hik-express.com平台获取数据的请求，需要进经过后台服务转发一下，如java的httpclient或者使用node写代理服务器
+	否者会有跨域问题，而https://127.0.0.1是安装视频客户端后用户本地电脑启动的代理服务，不需要处理。
+	***/
+	/*url常量*/
+	var proxyUrl='https://47.97.94.244:443',  //解决demo跨域的代理服务器地址，实际对接时请不要使用该地址，请调用你们自己的后台从http://www.hik-express.com获取相关数据
+        getPlayToken = '/a/lep/authorize/serviceToken',//获取预览回放token的url',参考文档3.1.2
+        previewUrl = 'https://127.0.0.1:20010/service/rest/v1/video/preview', //客户端预览接口
+        playbackUrl = 'https://127.0.0.1:20010/service/rest/v1/video/playback', //客户端回放接口
+        openUrl = 'https://127.0.0.1:20010/service/rest/v1/video/download', //客户端打开接口
+        pingUrl = 'https://127.0.0.1:20010/service/rest/v1/ping', //客户端ping接口
+        downloadClientUrl = '/b/lep/video/serviceDownload'//下载客户端的url,参数type：0 完整客户端，1 升级客户端，默认0
+        clientVersion = '1.0.0.3';  //客户端版本在getPlayToken请求返回的数据中就能获取，详见《云平台外部接口 说明书 V1.0》3.1.2中的输出参数version
+		
+
+	/*下载客户端*/
+	$('#download').on('click',function(){
+		$.ajax({
+            type: "POST",
+            url: "/hk/serviceDownload",
+            data:{
+                  type: 0 , //type:0 代表下载完整的客户端
+                  scheme: $.trim($('#scheme').val()),
+                  key: $.trim($('#key').val()),
+                  secret: $.trim($('#security').val())
+            },
+            success: function(resp){
+                var data = JSON.parse(resp.data);
+                console.log(data);
+                if(resp.ok){
+                    window.location.href = data.data;
+                    return false;
+                }else{
+                    alert(resp.msg);
+                }
+            }
+      	})
+	});
+	/*更新客户端*/
+	$('#update').on('click',function(){
+		$.ajax({
+          type: "POST",
+          url: "/hk/serviceDownload",
+          data:{
+              type: 1 , //type:1 代表更新的客户端
+              scheme: $.trim($('#scheme').val()),
+              key: $.trim($('#key').val()),
+              secret: $.trim($('#security').val())
+          }
+      	}).done(function(resp){
+            var data = JSON.parse(resp.data);
+            console.log(data);
+            if(resp.ok){
+                window.location.href = data.data;
+                return false;
+            }else{
+                alert(resp.msg);
+            }
+      	});
+	});
+	/*打开客户端*/
+	$('#open').on('click',function(){
+		//先获取预览回放token
+		$.ajax({
+            url: "/hk/serviceToken",
+            data: {
+                scheme: $.trim($('#scheme').val()), //企业标识
+                indexCode: $.trim($('#indexCode').val()),  //监控点编号
+                key: $.trim($('#key').val()), //企业key
+                secret: $.trim($('#security').val()) //企业secret
+            }
+        }).done(function (resp) {
+            var result = JSON.parse(resp.data);
+            console.log(result);
+            var data = result.data;
+            if (resp.ok) {
+                clientVersion = data.version; //保存最新版本信息
+                //发jsopn请求（地址pingUrl见line37），检测本地是否安装客户端
+                $.ajax({
+                    url: pingUrl,
+                    type: "GET",
+                    dataType: 'jsonp',
+                    jsonp: 'callback',
+                    timeout: 3000,
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true,
+                    jsonpCallback: "pingCallback",
+                    success: function (resp) {
+                        if (clientVersion == resp.version) {  //判断客户端版本
+                            //检测客户端安装完成，发起打开客户端请求
+                            $.ajax({
+                                url: openUrl,
+                                type: "GET",
+                                dataType: 'jsonp',
+                                jsonp: 'callback',
+                                data: {
+                                    method: 'open'  //打开客户端时传参数：method:'open'
+                                },
+                                xhrFields: {
+                                    withCredentials: true
+                                },
+                                crossDomain: true,
+                                jsonpCallback: "jsonpCallback",
+                                success: function (resp) {
+                                	//客户端打开成功，可做些关闭遮罩的操作
+                                    // st.layer.close(loading);
+                                    // $('#startClient').hide();
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    //客户端启动失败
+                                    // st.layer.close(loading);
+                                    // st.layer.error('启动客户端异常！');
+                                }
+                            });
+                        } else {
+                            updateClient(); //客户端版本不一致时，更新版本
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        /*客户端检测超时，说明没有安装，提示安装*/
+                        if (textStatus == 'timeout') {
+                            $.ajax({
+                                url: downloadClientUrl,
+                                data:{
+                                    type: 0 , //获取新客户端
+                                    scheme: $.trim($('#scheme').val()),
+                                    key: $.trim($('#key').val()),
+                                    secret: $.trim($('#security').val())
+                                }
+                            }).done(function (resp) {
+                                if (resp.success) {
+                                    window.location.href = resp.data;//客户端下载地址
+                                    return false;
+                                } else {
+                                    alert(resp.msg);
+                                }
+                            });
+                        }
+                    }
+                });
+            } else {//获取token失败
+                alert("获取token失败");
+            }
+        });
+	});
+	/*预览*/
+	$('#preview').on('click',function(){
+		//请求预览回放token
+        $.ajax({
+            url: "/hk/serviceToken",
+            data: {
+                scheme: $.trim($('#scheme').val()), //企业标识
+                indexCode: $.trim($('#indexCode').val()),  //监控点编号
+                key: $.trim($('#key').val()), //企业key
+                secret: $.trim($('#security').val()) //企业secret
+            }
+        }).done(function (resp) {
+            var result = JSON.parse(resp.data);
+            console.log(result);
+            var data = result.data;
+            if (resp.ok) {
+                clientVersion = data.version; //保存最新版本信息
+                var playMsg = { //组装预览参数
+                    url: previewUrl, //预览url
+                    params: {
+                        cameraId: data.cameraId,
+                        cameraName: "监控点名字",
+                        indexCode: $.trim($('#indexCode').val()),
+                        scheme: $.trim($('#scheme').val()),
+                        ip: 'www.hik-express.com', //本机ip
+                        token: data.token,
+                        method: 'start'
+                    }
+                }
+                play(playMsg); //调用播放函数
+            } else { //获取token失败
+                alert(resp.msg);
+            }
+        });
+	});
+	/*回放*/
+	$('#playback').on('click',function(){
+		$.ajax({
+            url:  "/hk/serviceToken",
+            data: {
+                scheme: $.trim($('#scheme').val()), //企业标识
+                indexCode: $.trim($('#indexCode').val()),  //监控点编号
+                key: $.trim($('#key').val()), //企业key
+                secret: $.trim($('#security').val()) //企业secret
+            }
+        }).done(function (resp) {
+            var result = JSON.parse(resp.data);
+            console.log(result);
+            var data = result.data;
+            if (resp.ok) {
+                clientVersion = data.version; //保存最新版本信息
+                var playMsg = { //组装预览参数
+                    url: playbackUrl, //回放url
+                    params: {
+                        cameraId: data.cameraId,
+                        cameraName: "监控点名字",
+                        indexCode: $.trim($('#indexCode').val()),
+                        scheme: $.trim($('#scheme').val()),
+                        ip: 'www.hik-express.com', //本机ip
+                        token: data.token,
+                        method: 'start'
+                    }
+                }
+                play(playMsg);
+            } else { //获取token失败
+                alert(resp.msg);
+            }
+        });
+	});
+
+	/*播放（play里的请求是jsonp跨域请求）*/
+	function play(data) {
+        //先用pingUrl接口检测客户端是否安装
+        $.ajax({
+            url: pingUrl,
+            type: "GET",
+            dataType: 'jsonp',
+            jsonp: 'callback',
+            timeout: 3000,
+            xhrFields: {
+                withCredentials: true
+            },
+            jsonpCallback: "pingCallback",
+            success: function (resp) {
+                if (clientVersion == resp.version) {
+                    //检测客户端安装完成（是最新版本），发起打开客户端请求
+                    $.ajax({
+                        url: data.url,  //根据传进来的是预览or回放url
+                        type: "GET",
+                        dataType: 'jsonp',
+                        jsonp: 'callback',
+                        data: data.params,
+                        xhrFields: {
+                            withCredentials: true
+                        },
+                        crossDomain: true,
+                        jsonpCallback: "jsonpCallback",
+                        success: function (resp) {
+                        	//客户端启动成功，这里可以关闭（加载中）遮罩
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            //客户端启动失败，关闭（加载中）遮罩
+                            alert('启动客户端异常！');
+                        }
+                    });
+                } else {
+                	//版本不一致时，提示更新客户端
+                    alert("客户端版本不是最新，请更新客户端！");
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                /*检测客户端超时，证明没有安装，提示安装*/
+                // st.layer.close(loadingShade); 关闭加载中遮罩
+                if (textStatus == 'timeout') {
+                    $.ajax({
+                        type: "POST",
+                        url: "/hk/serviceDownload",
+                        data:{
+                            type: 0 , //type:0 代表下载完整的客户端
+                            scheme: $.trim($('#scheme').val()),
+                            key: $.trim($('#key').val()),
+                            secret: $.trim($('#security').val())
+                        }
+                    }).done(function (resp) {
+                        var data = JSON.parse(resp.data);
+                        console.log(data);
+                        if(resp.ok){
+                            window.location.href = data.data;
+                            return false;
+                        }else{
+                            alert(resp.msg);
+                        }
+                    });
+                }
+            }
+        });
+    }
+    /*更新客户端*/
+    function updateClient(){
+    	$.ajax({
+          url:  "/hk/serviceDownload",
+          data:{
+              type: 1,
+              scheme: $.trim($('#scheme').val()),
+              key: $.trim($('#key').val()),
+              secret: $.trim($('#security').val())
+          }
+      	}).done(function(resp){
+            var data = JSON.parse(resp.data);
+            console.log(data);
+            if(resp.ok){
+                window.location.href = data.data;
+                return false;
+            }else{
+                alert(resp.msg);
+            }
+      	});
+    }
+    /*jsonp回调函数，可不做任何操作*/
+    function jsonpCallback(resp){
+        console.log('回调成功：');
+        console.log(resp);
+    }
+    function pingCallback(resp){
+        console.log('ping成功：');
+        console.log(resp);
+    }
+</script>
+</html>

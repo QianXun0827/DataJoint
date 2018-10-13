@@ -18,7 +18,7 @@ public class LbController {
     @Autowired
     private LbService lbService;
 
-    @RequestMapping("/test")
+    @RequestMapping("/lbPage")
     public String testHtml() {
         return "/lb/LbData.html";
     }
