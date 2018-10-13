@@ -17,7 +17,7 @@ public class HkPage {
 
     @RequestMapping("/hkPage")
     public String HkPage() {
-        return "/hk/GetHkData.html";
+        return "/hk/HkDataTest.html";
     }
 
     @RequestMapping("/hkData")
