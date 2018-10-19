@@ -36,17 +36,21 @@ public class LbServiceImpl implements LbService {
 
         List<LbPojo> list = lingBoPojoList.getPojos();
 
+        //  新数据插入时使用
+        /*lbMapper.insertLineStations(list);*/
+
         for (LbPojo lingBoPojo : list) {
             String lbLineName = lingBoPojo.getLineName();
             String lbLineDirection = lingBoPojo.getLineDirection();
             Integer lbLineId = lingBoPojo.getLineId();
             Integer lbOrderSite = lingBoPojo.getOrderSite();
             String lbStationName = lingBoPojo.getStationName();
-            Integer projectId = 3;
+            Integer projectId = 1;
             String lineCompany = "宁波公交公司";
             String ticketPrice = "2";
             Integer ticketType = 0;
 
+            //  线路去重
             int count = lbMapper.selectLineByExtraLineId(lbLineId,lbLineDirection);
             if (count == 0) {
 
@@ -67,6 +71,7 @@ public class LbServiceImpl implements LbService {
                 lbMapper.insetLineData(shLine);
             }
 
+            //  站点去重
             int countSta = lbMapper.selectStationByName(lbStationName);
             if (countSta == 0) {
                 shStation.setProjectId(projectId);

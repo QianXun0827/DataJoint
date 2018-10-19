@@ -5,10 +5,8 @@ import com.pm.lb.pojo.LbPojo;
 import com.pm.lb.pojo.ShLine;
 import com.pm.lb.pojo.ShLineStation;
 import com.pm.lb.pojo.ShStation;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import com.pm.lb.utils.MiddleProvider;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -48,4 +46,7 @@ public interface LbMapper {
 
     @Select("SELECT station_id FROM sh_station WHERE station_name = #{lbStationName}")
     Integer selectStationIdByName(String lbStationName);
+
+    @InsertProvider(type = MiddleProvider.class, method = "insertShelterInfoMiddle")
+    int insertLineStations(@Param("list") List<LbPojo> list);
 }
